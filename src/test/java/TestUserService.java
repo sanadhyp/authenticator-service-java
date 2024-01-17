@@ -78,6 +78,14 @@ public class TestUserService {
     }
 
     @Test
+    public void addSingleRoleForInvalidUserId_shouldThrowException() {
+        String userId = "unknown";
+        var aRole = new Role("IT_READONLY");
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> service.addRole(userId, aRole));
+    }
+
+    @Test
     public void addMultipleRolesForUserId_shouldAddAllRolesForUser() {
         String userId = BOB_ID;
         service.addRole(userId, new Role("IT_READONLY"));

@@ -52,6 +52,9 @@ public class UserService {
     }
 
     public boolean addRole(String userId, Role role) {
+        if(!this.getUserStore().containsKey(userId)){
+            throw new IllegalArgumentException("User doesn't exist");
+        }
         try {
             this.roleService.addNewRole(role);
         } catch (IllegalArgumentException e){
