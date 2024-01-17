@@ -6,7 +6,9 @@ import entity.User;
 import java.util.*;
 
 public class UserService {
-    UserSessionService session = new UserSessionService();
+    private UserSessionService session = new UserSessionService();
+    private RoleService roleService = new RoleService();
+
     private Map<String, User> userStore = new HashMap<>();
 
     public Map<String, User> getUserStore() {
@@ -50,6 +52,11 @@ public class UserService {
     }
 
     public boolean addRole(String userId, Role role) {
+        try {
+            this.roleService.addNewRole(role);
+        } catch (IllegalArgumentException e){
+            //do nothing, role already exist
+        }
         return this.getUserStore().get(userId).getRoles().add(role);
     }
 
@@ -61,11 +68,11 @@ public class UserService {
         this.getUserStore().get(userId).removeRoles();
     }
 
-    public String authenticate(String userId, String pwdEncrypted) throws IllegalStateException {
-        if (this.getUserStore().containsKey(userId) && this.getUserStore().get(userId).getPassword().equals(pwdEncrypted)) {
+    public String authenticate(String userId, String pwdPlain) throws IllegalStateException {
+        if (this.getUserStore().containsKey(userId) && this.getUserStore().get(userId).getPassword().equals(pwdPlain)) {
             return session.validate(userId);
         } else {
-            throw new IllegalStateException("Incorrect credentials supplied");
+            throw new IllegalStateException("Invalid userId or password");
         }
     }
 
@@ -73,14 +80,19 @@ public class UserService {
         if (this.getUserStore().containsKey(userId) && this.getUserStore().get(userId).getPassword().equals(pwdEncrypted)) {
             return session.begin(userId);
         } else {
-            throw new IllegalStateException("Incorrect credentials supplied");
+            throw new IllegalStateException("Invalid userId or password");
         }
     }
 
     public boolean checkRole(String authToken, Role role) {
         try {
             var roles = getAllRoles(authToken);
-            return roles.contains(role);
+            var isValidRole = roles.contains(role) && roleService.isValidRole(role);
+
+            if(!isValidRole) {
+                this.getUserById(session.fetchUserId(authToken)).removeRole(role);
+            }
+            return isValidRole;
         } catch (Exception e) {
             return false;
         }
@@ -93,8 +105,16 @@ public class UserService {
     private Set<Role> getAllRoles(String authToken) {
         if (session.validateToken(authToken).equals(authToken)) {
             var user = this.getUserById(session.fetchUserId(authToken));
+            var validRoles = user.getRoles().retainAll(getRoleService().getRoles());
             return user.getRoles();
         }
         return new HashSet<Role>();
+    }
+    public UserSessionService getSession() {
+        return this.session;
+    }
+
+    public RoleService getRoleService() {
+        return this.roleService;
     }
 }

@@ -35,7 +35,7 @@ public class TestRoleService {
     }
 
     @Test
-    public void addNonExistentRole_shouldThrowException(){
+    public void deleteNonExistentRole_shouldThrowException(){
         Assertions.assertThrows(IllegalArgumentException.class, () -> service.deleteRole(TRADER));
     }
 

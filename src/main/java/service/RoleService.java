@@ -13,11 +13,25 @@ public class RoleService {
         return this.roles;
     }
 
+    public boolean isValidRole(Role role){
+        return this.getRoles().contains(role);
+    }
+
     public void addNewRole(Role aRole) throws IllegalArgumentException{
         if(this.roles.contains(aRole)){
             throw new IllegalArgumentException("Role already exists.");
         }
         this.roles.add(aRole);
+    }
+    public void addNewRoles(Role... roles){
+        for(Role role : roles){
+            try {
+                addNewRole(role);
+            } catch (Exception e){
+                //do nothing if role already exists
+                continue;
+            }
+        }
     }
 
     public boolean deleteRole(Role aRole) throws IllegalArgumentException{

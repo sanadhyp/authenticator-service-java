@@ -133,6 +133,7 @@ public class TestUserService {
         String userId = BOB_ID;
         service.setPassword(BOB_ID, BOB_PWD_PLAIN);
         service.removeAllRolesForUser(BOB_ID);
+        service.getRoleService().addNewRoles(ADMIN, SALES, TRADER);
         service.addRoles(userId, ADMIN, SALES, TRADER);
         var authToken = service.login(userId, BOB_PWD_ENCRYPTED);
 

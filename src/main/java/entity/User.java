@@ -44,6 +44,9 @@ public final class User {
     public void removeRoles() {
         this.roles = new HashSet<>();
     }
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+    }
 
     public void addRole(Role role) {
         this.roles.add(role);
