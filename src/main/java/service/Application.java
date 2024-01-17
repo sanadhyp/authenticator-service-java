@@ -1,7 +1,6 @@
 package service;
 
 import entity.Role;
-import entity.User;
 
 import java.util.Base64;
 import java.util.Scanner;
