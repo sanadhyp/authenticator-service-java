@@ -55,6 +55,8 @@ public class UserSessionService {
         if (tokens.get(aToken).plusSeconds(tokenTTL).isAfter(Instant.now())) {
             return aToken;
         } else {
+            tokens.remove(aToken);
+            removeUserId(aToken);
             throw new IllegalStateException("Token expired, login again");
         }
 
@@ -68,6 +70,14 @@ public class UserSessionService {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
         return users.size() == 0 ? "" : users.get(0);
+    }
+    private void removeUserId(String token) throws IllegalStateException {
+        var users = this.sessions.entrySet()
+                .stream()
+                .filter(entry -> Objects.equals(entry.getValue(), token))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        this.sessions.remove(users.get(0));
     }
 
     private String generateToken() {

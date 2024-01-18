@@ -13,5 +13,11 @@ Default token-timeout: Configured in ApplicationConfiguration.java
 
 Entities:
 1. User
-2. Role 
-3. Session : contains token and it's creation timestamp
+2. Role <br> 
+~~3. Session : contains token and it's creation timestamp~~ it is not used in the current design
+
+
+Future improvements:
+1. Thread-safety
+2. Bi-directional cache in UserSessionService for storing user-token,  token-user relationship
+3. Integration tests
